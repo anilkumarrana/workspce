@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Northstar favicon">
+  <defs>
+    <linearGradient id="northstarGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#d7f273"/>
+      <stop offset="100%" stop-color="#7dbf56"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="#13242c"/>
+  <path d="M18 18h11.5L31 26.5l12.5-8.5H54l-8.2 30H42l4.6-19.4L31 39.3 17.4 28.6 22 48h-4.8L18 18Z" fill="url(#northstarGradient)"/>
+</svg>
