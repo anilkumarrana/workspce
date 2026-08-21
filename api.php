@@ -3,8 +3,36 @@ session_start();
 header('Content-Type: application/json; charset=utf-8');
 require_once __DIR__ . '/db.php';
 
+$publicActions = [
+    'status',
+    'login',
+    'leader_login',
+    'create_team_leader',
+    'logout',
+    'logout_all',
+    'leader_logout',
+    'register',
+    'signup',
+    'create_employee',
+];
+
+$method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+$requestedAction = $method === 'POST' ? (string) ($_POST['action'] ?? '') : (string) ($_GET['action'] ?? '');
+$hasActiveSession = !empty($_SESSION['employee_id']) || !empty($_SESSION['is_team_leader']);
+
+if ($requestedAction !== '' && !in_array($requestedAction, $publicActions, true) && !$hasActiveSession) {
+    http_response_code(401);
+    echo json_encode(['success' => false, 'error' => 'Authentication required. Please sign in to continue.'], JSON_PRETTY_PRINT);
+    exit;
+}
+
+if ($requestedAction === '' && !$hasActiveSession && $method === 'GET') {
+    http_response_code(401);
+    echo json_encode(['success' => false, 'error' => 'Authentication required. Please sign in to continue.'], JSON_PRETTY_PRINT);
+    exit;
+}
+
 try {
-    $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
     if ($method === 'GET') {
         $action = $_GET['action'] ?? 'employees';
@@ -261,7 +289,8 @@ try {
     }
 
     if ($action === 'leader_logout') {
-        unset($_SESSION['is_team_leader'], $_SESSION['leader_id'], $_SESSION['leader_username'], $_SESSION['leader_name'], $_SESSION['leader_department']);
+        session_unset();
+        session_destroy();
         echo json_encode(['success' => true], JSON_PRETTY_PRINT);
         exit;
     }

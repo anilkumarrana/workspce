@@ -1,3 +1,10 @@
+<?php
+session_start();
+if (empty($_SESSION['employee_id']) && empty($_SESSION['is_team_leader'])) {
+    header('Location: login.php');
+    exit;
+}
+?>
 <!doctype html>
 <html lang="en">
   <head>

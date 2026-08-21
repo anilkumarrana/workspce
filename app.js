@@ -807,6 +807,15 @@ const signupForm = document.getElementById('signupForm');
 const logoutBtn = document.getElementById('logoutBtn');
 const showCreateAccountBtn = document.getElementById('showCreateAccountBtn');
 const showLoginBtn = document.getElementById('showLoginBtn');
+const isLoginPage = document.body?.dataset?.page === 'login' || window.location.pathname.toLowerCase().endsWith('/login.php');
+const redirectToApp = () => {
+  if (isLoginPage) {
+    window.location.href = 'index.php';
+  }
+};
+const redirectToLogin = () => {
+  window.location.href = 'login.php?logged_out=1';
+};
 const toggleAuthMode = (mode) => {
   const showLogin = mode === 'login';
   loginForm?.classList.toggle('hidden', !showLogin);
@@ -861,8 +870,7 @@ const syncAuthState = async () => {
 };
 const loadEmployees = async () => { try { const response = await fetch('api.php'); const data = await response.json(); employees = (Array.isArray(data.employees) ? data.employees : []).map(normalizeEmployee); if (!employees.length) { employees = fallbackEmployees; } } catch (error) { console.error('Unable to load employees', error); employees = fallbackEmployees; } employees.forEach((employee) => ensureWorkLog(employee.id)); renderEmployeeList(); renderEmployeeDirectory(); populateEmployeeSelects(); populateWorklog(); renderWorklog(); syncEmployeePreview(); renderTracker(); };
 loadEmployees(); trackerEmployee.addEventListener('change', renderTracker);
-loginForm?.addEventListener('submit', async (event) => { event.preventDefault(); const formData = new FormData(loginForm); formData.append('action', 'login'); try { const response = await fetch('api.php', {method:'POST', body: formData}); const result = await response.json(); if (!response.ok || !result.success) throw new Error(result.error || 'Unable to log in.'); await syncAuthState(); loginForm.reset(); toast.textContent = `✓ Welcome back, ${result.employee.name}.`; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 3200); } catch (error) { toast.textContent = error.message || 'There was a problem logging in.'; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 3200); } });
-showCreateAccountBtn?.addEventListener('click', () => toggleAuthMode('signup'));
+loginForm?.addEventListener('submit', async (event) => { event.preventDefault(); const formData = new FormData(loginForm); formData.append('action', 'login'); try { const response = await fetch('api.php', {method:'POST', body: formData}); const result = await response.json(); if (!response.ok || !result.success) throw new Error(result.error || 'Unable to log in.'); await syncAuthState(); loginForm.reset(); if (isLoginPage) { redirectToApp(); return; } toast.textContent = `✓ Welcome back, ${result.employee.name}.`; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 3200); } catch (error) { toast.textContent = error.message || 'There was a problem logging in.'; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 3200); } });showCreateAccountBtn?.addEventListener('click', () => toggleAuthMode('signup'));
 showLoginBtn?.addEventListener('click', () => toggleAuthMode('login'));
 signupForm?.addEventListener('submit', async (event) => {
   event.preventDefault();
@@ -915,6 +923,10 @@ signupForm?.addEventListener('submit', async (event) => {
 
     signupForm.reset();
     await syncAuthState();
+    if (isLoginPage) {
+      redirectToApp();
+      return;
+    }
     toast.textContent = `✓ Account created successfully. Welcome, ${loginResult.employee.name}.`;
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 3500);
@@ -924,7 +936,7 @@ signupForm?.addEventListener('submit', async (event) => {
     setTimeout(() => toast.classList.remove('show'), 3200);
   }
 });
-logoutBtn?.addEventListener('click', async () => { const formData = new FormData(); formData.append('action', 'logout'); await fetch('api.php', {method:'POST', body: formData}); rosterStatus.active = false; await syncAuthState(); toggleAuthMode('login'); toast.textContent = '✓ You have been logged out.'; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 2200); });
+logoutBtn?.addEventListener('click', async () => { const formData = new FormData(); formData.append('action', 'logout'); await fetch('api.php', {method:'POST', body: formData}); rosterStatus.active = false; await syncAuthState(); toggleAuthMode('login'); redirectToLogin(); toast.textContent = '✓ You have been logged out.'; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 2200); });
 employeeForm.addEventListener('submit', async (event) => {
   event.preventDefault();
   const isUserAuth = Boolean(currentSessionData?.loggedIn || currentSessionData?.isTeamLeader);
@@ -1596,6 +1608,11 @@ document.getElementById('leaderLoginForm')?.addEventListener('submit', async (e)
     updateLeaderUIState();
     leaderLoginModal?.classList.remove('show');
 
+    if (isLoginPage) {
+      window.location.href = 'index.php';
+      return;
+    }
+
     toast.textContent = '👑 Signed in successfully as Team Leader!';
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 3200);
@@ -1639,6 +1656,11 @@ document.getElementById('createLeaderForm')?.addEventListener('submit', async (e
     createLeaderModal?.classList.remove('show');
     form.reset();
 
+    if (isLoginPage) {
+      window.location.href = 'index.php';
+      return;
+    }
+
     toast.textContent = `👑 Leader account created! Leader ID: ${data.leader.leader_id}`;
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 5000);
@@ -1668,6 +1690,7 @@ const handleLeaderSignOut = async () => {
   leaderPortalState.isTeamLeader = false;
   leaderPortalState.leaderInfo = null;
   updateLeaderUIState();
+  redirectToLogin();
 
   toast.textContent = '🚪 Team Leader signed out.';
   toast.classList.add('show');
@@ -1752,6 +1775,7 @@ const handleEmployeeSignOut = async () => {
     console.error(e);
   }
   await checkAuthStatus();
+  redirectToLogin();
   toast.textContent = '🚪 Signed out of employee account.';
   toast.classList.add('show');
   setTimeout(() => toast.classList.remove('show'), 2500);
@@ -2015,8 +2039,8 @@ const updateUserSessionUI = (data) => {
 
   const isUserAuthenticated = Boolean(data?.loggedIn || data?.isTeamLeader);
 
-  if (authShell) authShell.classList.add('hidden');
-  if (appShell) appShell.classList.remove('hidden');
+  if (authShell) authShell.classList.toggle('hidden', isUserAuthenticated);
+  if (appShell) appShell.classList.toggle('hidden', !isUserAuthenticated);
 
   let activeName = '';
   let activeRole = '';
