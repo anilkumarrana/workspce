@@ -177,13 +177,16 @@
                   <!-- Employee Sign In Form -->
                   <form id="formEmpSignIn">
                     <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:700;color:#3b4d53;margin-bottom:10px;">
-                      Username
-                      <input name="username" required placeholder="e.g. employee123" style="padding:9px 12px;border:1px solid #cce0d8;border-radius:8px;font-size:13px;" />
+                      Username, Email, or ID
+                      <input name="username" required value="employee123" placeholder="e.g. employee123 or NST-2024-0001" style="padding:9px 12px;border:1px solid #cce0d8;border-radius:8px;font-size:13px;" />
                     </label>
-                    <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:700;color:#3b4d53;margin-bottom:14px;">
+                    <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:700;color:#3b4d53;margin-bottom:12px;">
                       Password
-                      <input name="password" type="password" required placeholder="Enter password" style="padding:9px 12px;border:1px solid #cce0d8;border-radius:8px;font-size:13px;" />
+                      <input name="password" type="password" required value="employee123" placeholder="Enter password" style="padding:9px 12px;border:1px solid #cce0d8;border-radius:8px;font-size:13px;" />
                     </label>
+                    <div style="background:#f4f9f2;border:1px solid #d4ebcc;border-radius:8px;padding:8px 10px;margin-bottom:12px;font-size:11px;color:#2f5d34;">
+                      🔑 <b>Demo Employee Login:</b><br/>Username: <code>employee123</code> &nbsp;|&nbsp; Password: <code>employee123</code>
+                    </div>
                     <button type="submit" class="check" style="width:100%;padding:11px;background:#315134;color:#c9fa6a;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;">Employee Sign In <span>→</span></button>
                   </form>
 
@@ -193,15 +196,18 @@
                       <input name="firstName" required placeholder="First Name" style="padding:8px;border:1px solid #cce0d8;border-radius:6px;font-size:12px;" />
                       <input name="lastName" required placeholder="Last Name" style="padding:8px;border:1px solid #cce0d8;border-radius:6px;font-size:12px;" />
                     </div>
-                    <input name="email" type="email" required placeholder="Work Email" style="width:100%;margin-bottom:8px;padding:8px;border:1px solid #cce0d8;border-radius:6px;font-size:12px;" />
+                    <input name="email" type="email" required placeholder="Work Email (e.g. name@northstar.com)" style="width:100%;margin-bottom:8px;padding:8px;border:1px solid #cce0d8;border-radius:6px;font-size:12px;" />
                     <select name="department" style="width:100%;margin-bottom:8px;padding:8px;border:1px solid #cce0d8;border-radius:6px;font-size:12px;">
                       <option>Product Design</option>
                       <option>Engineering</option>
+                      <option>Quality Assurance</option>
                       <option>Operations</option>
+                      <option>People Operations</option>
                     </select>
-                    <input name="username" required placeholder="Choose Username" style="width:100%;margin-bottom:8px;padding:8px;border:1px solid #cce0d8;border-radius:6px;font-size:12px;" />
-                    <input name="password" type="password" required placeholder="Password" style="width:100%;margin-bottom:12px;padding:8px;border:1px solid #cce0d8;border-radius:6px;font-size:12px;" />
-                    <button type="submit" class="check" style="width:100%;padding:10px;background:#315134;color:#c9fa6a;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">Create Account <span>→</span></button>
+                    <input name="username" required placeholder="Choose Username (min 3 chars)" style="width:100%;margin-bottom:8px;padding:8px;border:1px solid #cce0d8;border-radius:6px;font-size:12px;" />
+                    <input name="password" type="password" required placeholder="Set Password (min 4 chars)" style="width:100%;margin-bottom:12px;padding:8px;border:1px solid #cce0d8;border-radius:6px;font-size:12px;" />
+                    <input name="startDate" type="hidden" value="<?php echo date('Y-m-d'); ?>" />
+                    <button type="submit" class="check" style="width:100%;padding:10px;background:#315134;color:#c9fa6a;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">Create Account &amp; Sign In <span>→</span></button>
                   </form>
                 </div>
 
@@ -215,25 +221,28 @@
                   <!-- Leader Sign In Form -->
                   <form id="formLeaderSignIn">
                     <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:700;color:#3b4d53;margin-bottom:10px;">
-                      Leader Username
-                      <input name="username" required value="leader" placeholder="Leader username" style="padding:9px 12px;border:1px solid #cce0d8;border-radius:8px;font-size:13px;" />
+                      Leader Username or ID
+                      <input name="username" required value="leader" placeholder="Leader username or ID" style="padding:9px 12px;border:1px solid #cce0d8;border-radius:8px;font-size:13px;" />
                     </label>
-                    <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:700;color:#3b4d53;margin-bottom:14px;">
+                    <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:700;color:#3b4d53;margin-bottom:12px;">
                       Password
                       <input name="password" type="password" required value="leader123" placeholder="Leader password" style="padding:9px 12px;border:1px solid #cce0d8;border-radius:8px;font-size:13px;" />
                     </label>
+                    <div style="background:#f0f5fa;border:1px solid #c8dced;border-radius:8px;padding:8px 10px;margin-bottom:12px;font-size:11px;color:#18303e;">
+                      👑 <b>Default Team Leader:</b><br/>Username: <code>leader</code> &nbsp;|&nbsp; Password: <code>leader123</code>
+                    </div>
                     <button type="submit" class="check" style="width:100%;padding:11px;background:#172a37;color:#c9fa6a;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;">Team Leader Sign In <span>→</span></button>
                   </form>
 
                   <!-- High-Security Team Leader Registration Form -->
                   <form id="formSecureLeaderRegister" class="hidden">
                     <div style="background:#fff8eb;border:1px solid #ffe0b2;padding:8px 10px;border-radius:8px;margin-bottom:10px;">
-                      <span style="font-size:10px;font-weight:800;color:#d97706;letter-spacing:0.5px;">🛡️ SECURITY PROTOCOL ENFORCED</span>
-                      <p style="margin:2px 0 0;font-size:11px;color:#78350f;line-height:1.3;">Specific org data &amp; password requirements mandatory.</p>
+                      <span style="font-size:10px;font-weight:800;color:#d97706;letter-spacing:0.5px;">🛡️ TEAM LEADER REGISTRATION</span>
+                      <p style="margin:2px 0 0;font-size:11px;color:#78350f;line-height:1.3;">Create an executive Team Leader account to review reports &amp; tasks.</p>
                     </div>
 
-                    <label style="display:block;font-size:11px;font-weight:700;color:#334;margin-bottom:3px;">Org Security Key *</label>
-                    <input name="secKey" required value="NORTHSTAR-LEADER-2026" placeholder="NORTHSTAR-LEADER-2026" style="width:100%;margin-bottom:8px;padding:7px;border:1px solid #cce0d8;border-radius:6px;font-size:12px;background:#fbfdfc;" />
+                    <label style="display:block;font-size:11px;font-weight:700;color:#334;margin-bottom:3px;">Org Security Key</label>
+                    <input name="secKey" value="NORTHSTAR-LEADER-2026" placeholder="NORTHSTAR-LEADER-2026" style="width:100%;margin-bottom:8px;padding:7px;border:1px solid #cce0d8;border-radius:6px;font-size:12px;background:#fbfdfc;" />
 
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px;">
                       <div>
@@ -272,17 +281,8 @@
                     <label style="display:block;font-size:11px;font-weight:700;color:#334;margin-bottom:3px;">Leader Username *</label>
                     <input name="username" required placeholder="leader_sarah" style="width:100%;margin-bottom:8px;padding:7px;border:1px solid #cce0d8;border-radius:6px;font-size:12px;" />
 
-                    <!-- High-Security Password Protocol -->
-                    <div style="padding:10px;background:#f8faf9;border:1px dashed #b0d4c1;border-radius:8px;margin-bottom:10px;">
-                      <label style="display:block;font-size:11px;font-weight:700;color:#172a37;margin-bottom:4px;">Security Password Protocol *</label>
-                      <input id="leaderSecPass" name="password" type="password" required placeholder="Min 8 chars (Upper + Num + Special)" style="width:100%;margin-bottom:6px;padding:7px;border:1px solid #cce0d8;border-radius:6px;font-size:12px;" />
-                      <input id="leaderSecPassConfirm" name="confirmPassword" type="password" required placeholder="Confirm Password" style="width:100%;margin-bottom:6px;padding:7px;border:1px solid #cce0d8;border-radius:6px;font-size:12px;" />
-                      <small id="leaderPassHint" style="font-size:10px;color:#e74c3c;display:block;">⚠️ Require: 8+ chars, 1 Uppercase, 1 Number, 1 Special (#?!@$%^&amp;*-)</small>
-                    </div>
-
-                    <!-- Master 6-Digit PIN -->
-                    <label style="display:block;font-size:11px;font-weight:700;color:#334;margin-bottom:3px;">6-Digit Master Security PIN *</label>
-                    <input name="masterPin" type="password" maxlength="6" required placeholder="e.g. 849201" style="width:100%;margin-bottom:12px;padding:7px;border:1px solid #cce0d8;border-radius:6px;font-size:12px;" />
+                    <label style="display:block;font-size:11px;font-weight:700;color:#334;margin-bottom:3px;">Password *</label>
+                    <input id="leaderSecPass" name="password" type="password" required placeholder="Minimum 4 characters" style="width:100%;margin-bottom:12px;padding:7px;border:1px solid #cce0d8;border-radius:6px;font-size:12px;" />
 
                     <button type="submit" class="check" style="width:100%;padding:10px;background:#172a37;color:#c9fa6a;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">Generate Leader ID &amp; Create Account <span>→</span></button>
                   </form>

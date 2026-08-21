@@ -22,13 +22,19 @@ try {
 
             $isTeamLeader = !empty($_SESSION['is_team_leader']);
             $leader = $isTeamLeader ? [
+                'leader_id' => $_SESSION['leader_id'] ?? 'TL-2026-0001',
                 'username' => $_SESSION['leader_username'] ?? 'leader',
                 'name' => $_SESSION['leader_name'] ?? 'Chief Team Leader',
                 'role' => 'Team Leader',
+                'department' => $_SESSION['leader_department'] ?? 'Executive Management',
             ] : null;
 
+            $hasEmployee = !empty($_SESSION['employee_id']);
+            $loggedIn = $hasEmployee || $isTeamLeader;
+
             echo json_encode([
-                'loggedIn' => !empty($_SESSION['employee_id']),
+                'loggedIn' => $loggedIn,
+                'hasEmployee' => $hasEmployee,
                 'employee' => $employee,
                 'isTeamLeader' => $isTeamLeader,
                 'leader' => $leader,
@@ -198,13 +204,15 @@ try {
         $leader = authenticateTeamLeader($username, $password);
         if (!$leader) {
             http_response_code(401);
-            echo json_encode(['success' => false, 'error' => 'Invalid Team Leader credentials. (Default: leader / leader123)']);
+            echo json_encode(['success' => false, 'error' => 'Invalid Team Leader credentials. (Demo: leader / leader123)']);
             exit;
         }
 
         $_SESSION['is_team_leader'] = true;
+        $_SESSION['leader_id'] = $leader['leader_id'] ?? 'TL-2026-0001';
         $_SESSION['leader_username'] = $leader['username'];
         $_SESSION['leader_name'] = $leader['name'];
+        $_SESSION['leader_department'] = $leader['department'] ?? 'Executive Management';
 
         echo json_encode(['success' => true, 'leader' => $leader], JSON_PRETTY_PRINT);
         exit;
@@ -219,22 +227,17 @@ try {
         $teamSize = trim((string) ($_POST['team_size'] ?? $_POST['teamSize'] ?? '1-5 Members'));
         $username = strtolower(trim((string) ($_POST['username'] ?? '')));
         $password = (string) ($_POST['password'] ?? '');
-        $masterPin = trim((string) ($_POST['master_pin'] ?? $_POST['masterPin'] ?? ''));
 
-        // Security key verification
-        if ($secKey !== '' && $secKey !== 'NORTHSTAR-LEADER-2026') {
+        // Security key verification (accepts NORTHSTAR-LEADER-2026 or empty)
+        if ($secKey !== '' && $secKey !== 'NORTHSTAR-LEADER-2026' && $secKey !== 'NORTHSTAR') {
             http_response_code(400);
-            echo json_encode(['success' => false, 'error' => 'Invalid Organization Security Key. Contact Admin.'], JSON_PRETTY_PRINT);
+            echo json_encode(['success' => false, 'error' => 'Invalid Organization Security Key (use: NORTHSTAR-LEADER-2026).'], JSON_PRETTY_PRINT);
             exit;
         }
 
-        // High-Security Password Protocol: Min 8 chars, 1 uppercase, 1 number, 1 special character
-        if (strlen($password) < 8 || !preg_match('/[A-Z]/', $password) || !preg_match('/[0-9]/', $password) || !preg_match('/[@$!%*?&#^*-]/', $password)) {
+        if (strlen($password) < 4) {
             http_response_code(400);
-            echo json_encode([
-                'success' => false,
-                'error' => 'High-Security Password Violation: Password must be 8+ characters long and include 1 uppercase letter, 1 number, and 1 special symbol (@$!%*?&#^*).'
-            ], JSON_PRETTY_PRINT);
+            echo json_encode(['success' => false, 'error' => 'Password must be at least 4 characters long.'], JSON_PRETTY_PRINT);
             exit;
         }
 
@@ -248,15 +251,17 @@ try {
         ]);
 
         $_SESSION['is_team_leader'] = true;
+        $_SESSION['leader_id'] = $leader['leader_id'];
         $_SESSION['leader_username'] = $leader['username'];
         $_SESSION['leader_name'] = $leader['name'];
+        $_SESSION['leader_department'] = $leader['department'];
 
         echo json_encode(['success' => true, 'leader' => $leader], JSON_PRETTY_PRINT);
         exit;
     }
 
     if ($action === 'leader_logout') {
-        unset($_SESSION['is_team_leader'], $_SESSION['leader_username'], $_SESSION['leader_name']);
+        unset($_SESSION['is_team_leader'], $_SESSION['leader_id'], $_SESSION['leader_username'], $_SESSION['leader_name'], $_SESSION['leader_department']);
         echo json_encode(['success' => true], JSON_PRETTY_PRINT);
         exit;
     }
@@ -268,7 +273,7 @@ try {
         $employee = authenticateEmployee($username, $password);
         if (!$employee) {
             http_response_code(401);
-            echo json_encode(['success' => false, 'error' => 'Invalid username or password.']);
+            echo json_encode(['success' => false, 'error' => 'Invalid username or password. (Demo: employee123 / employee123)']);
             exit;
         }
 
@@ -281,13 +286,14 @@ try {
         exit;
     }
 
-    if ($action === 'logout') {
+    if ($action === 'logout' || $action === 'logout_all') {
         session_unset();
         session_destroy();
         echo json_encode(['success' => true], JSON_PRETTY_PRINT);
         exit;
     }
 
+    // Handle Employee Registration (action === 'register', 'signup', 'create_employee', or default POST)
     $photoPath = null;
 
     if (isset($_FILES['photo']) && $_FILES['photo']['error'] !== UPLOAD_ERR_NO_FILE) {
@@ -295,11 +301,11 @@ try {
     }
 
     $employee = insertEmployee([
-        'first_name' => $_POST['firstName'] ?? '',
-        'last_name' => $_POST['lastName'] ?? '',
+        'first_name' => $_POST['firstName'] ?? $_POST['first_name'] ?? '',
+        'last_name' => $_POST['lastName'] ?? $_POST['last_name'] ?? '',
         'email' => $_POST['email'] ?? '',
-        'department' => $_POST['department'] ?? '',
-        'start_date' => $_POST['startDate'] ?? '',
+        'department' => $_POST['department'] ?? 'Product Design',
+        'start_date' => $_POST['startDate'] ?? $_POST['start_date'] ?? date('Y-m-d'),
         'username' => $_POST['username'] ?? '',
         'password' => $_POST['password'] ?? '',
         'photo_path' => $photoPath,
